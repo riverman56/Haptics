@@ -6,17 +6,6 @@
     "ReplicatedStorage": {
       "$className": "ReplicatedStorage",
       "$path": "src"
-    },
-    "ServerScriptService": {
-      "$className": "ServerScriptService",
-      "$path": "bin/server"
-    },
-    "StarterPlayer": {
-      "$className": "StarterPlayer",
-      "StarterPlayerScripts": {
-        "$className": "StarterPlayerScripts",
-        "$path": "bin/client"
-      }
     }
   }
 }
