@@ -1,77 +1,81 @@
-local Types = require(script.Parent.Parent.Types)
+--[[
+    Adapted from https://github.com/Roblox/rodux/blob/45c106f09c58f706a7ea458c6ff17914dd9a22c6/src/Signal.lua
 
-local signal = {}
-local connection = {}
-signal.__index = signal
-connection.__index = connection
+    Adapted from Roblox Corporation. Licensed under the MIT license.
 
-local function addToMap(map: table, addKey: any, addValue: any): table
+    "A limited, simple implementation of a Signal.
+
+	Handlers are fired in order, and (dis)connections are properly handled when
+	executing an event."
+]]
+
+local function immutableAppend(list: table, ...: any)
 	local new = {}
+	local len = #list
 
-	for key, value in pairs(map) do
-		new[key] = value
+	for key = 1, len do
+		new[key] = list[key]
 	end
 
-	new[addKey] = addValue
+	for i = 1, select("#", ...) do
+		new[len + i] = select(i, ...)
+	end
 
 	return new
 end
 
-local function removeFromMap(map: table, removeKey: any): table
+local function immutableRemoveValue(list: table, removeValue: any)
 	local new = {}
 
-	for key, value in pairs(map) do
-		if key ~= removeKey then
-			new[key] = value
+	for i = 1, #list do
+		if list[i] ~= removeValue then
+			table.insert(new, list[i])
 		end
 	end
 
 	return new
 end
 
-function signal.new()
-    local self = {
-        connections = {},
-    }
+local Signal = {}
 
-    setmetatable(self, signal)
+Signal.__index = Signal
 
-    return self
+function Signal.new()
+	local self = {
+		_listeners = {}
+	}
+
+	setmetatable(self, Signal)
+
+	return self
 end
 
-function signal:_fire(...)
-    for callback, _connection in pairs(self.connections) do
-        if _connection.connected == true then
-            callback(...)
-        end
-    end
+function Signal:connect(callback: () -> any)
+	local listener = {
+		callback = callback,
+		disconnected = false,
+	}
+
+	self._listeners = immutableAppend(self._listeners, listener)
+
+	local function disconnect()
+        assert(not listener.disconnected, "You may only disconnest listeners once.")
+
+		listener.disconnected = true
+		self._listeners = immutableRemoveValue(self._listeners, listener)
+	end
+
+	return {
+		disconnect = disconnect
+	}
 end
 
-function signal:connect(callback: () -> any)
-    local newConnection = connection.new(callback)
-
-    self.connections = addToMap(self.connections, callback, newConnection)
-
-    return newConnection
+function Signal:_fire(...: any)
+	for _, listener in ipairs(self._listeners) do
+		if not listener.disconnected then
+			listener.callback(...)
+		end
+	end
 end
 
-function connection.new(callback: () -> any, signal)
-    local self = {
-        connected = true,
-        callback = callback,
-        signal = signal,
-    }
-
-    setmetatable(self, connection)
-
-    return self
-end
-
-function connection:disconnect()
-    assert(self.connected, "Connections may only be disconnected once")
-
-    self.connected = false
-    self.signal.connections = removeFromMap(self.callback)
-end
-
-return signal
+return Signal
