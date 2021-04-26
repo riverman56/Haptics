@@ -1,0 +1,40 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+return function()
+    local Engine = require(ReplicatedStorage.Haptics.Engine)
+
+    describe("new", function()
+        it("should properly construct a new Engine", function()
+            expect(Engine.new()).to.be.ok()
+        end)
+    end)
+
+    describe("vibrate", function()
+        it("should vibrate", function()
+            expect(function()
+                Engine.new():vibrate(require(ReplicatedStorage.Haptics.Presets.impact))
+            end).never.to.throw()
+        end)
+
+        it("should reject incorrect types", function()
+            expect(function()
+                Engine.new():vibrate(5)
+            end).to.throw()
+            expect(function()
+                Engine.new():vibrate("blargh")
+            end).to.throw()
+        end)
+    end)
+
+    describe("getCapability", function()
+        it("should never throw with correct usage parameters", function()
+            expect(function()
+                Engine.new():getCapability(Enum.UserInputType.Gamepad1, Enum.VibrationMotor.Small)
+            end).never.to.throw()
+
+            expect(function()
+                Engine.new():getCapability(Enum.UserInputType.Gamepad5, Enum.VibrationMotor.LeftTrigger)
+            end).never.to.throw()
+        end)
+    end)
+end
