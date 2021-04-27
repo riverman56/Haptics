@@ -4,6 +4,11 @@ local impact = Vibration.new(Enum.UserInputType.Gamepad1, Enum.VibrationMotor.La
     {
         amplitude = 0.5,
         length = 0.07,
+        delay = 0.02
+    },
+    {
+        amplitude = 0.75,
+        length = 0.15,
     },
 })
 
