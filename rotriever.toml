@@ -2,5 +2,5 @@
 name = "haptics"
 author = "River Constantino"
 content_root = "src/Haptics"
-version = "1.0.0-alpha"
+version = "1.0.0-alpha.1"
 license = "MIT"
