@@ -7,6 +7,7 @@ local signal = require(script.Parent.Utility.signal)
 local Engine = {}
 Engine.__index = Engine
 
+-- TODO HPTCS-6: Create a proper method for sustained vibrations
 function Engine.new()
     local self = setmetatable({}, Engine)
 
@@ -53,7 +54,7 @@ function Engine:vibrate(vibration: Types.vibration)
         for _, node in pairs(vibration._sequence) do
             if self._isRunning then
                 HapticService:SetMotor(vibration.input, vibration.motor, node.amplitude)
-                
+
                 wait(node.length)
 
                 if node.delay and node.delay > 0 then
@@ -71,8 +72,12 @@ function Engine:vibrate(vibration: Types.vibration)
     end)()
 end
 
-function Engine:destroy()
+function Engine:stop()
     self._isRunning = false
+end
+
+function Engine:destroy()
+    self:stop()
 end
 
 return Engine
