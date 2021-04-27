@@ -10,7 +10,15 @@ function Vibration.new(input: Enum.UserInputType, motor: Enum.VibrationMotor, se
 
     for index, node in pairs(sequence) do
         if node.amplitude < 0 or node.amplitude > 1 then
-            error(string.format("Error in node %d: Amplitude must be between 0 and 1!", index))
+            error(string.format("Error in node %d: Amplitude must be between 0 and 1.", index))
+        end
+        
+        if node.length < 0 then
+            error(string.format("Error in node %d: Node length cannot be less than 0.", index))
+        end
+
+        if node.delay and node.delay < 0 then
+            error(string.format("Error in node %d: Node delay cannot be less than 0.", index))
         end
     end
 

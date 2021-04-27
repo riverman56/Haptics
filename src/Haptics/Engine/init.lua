@@ -43,16 +43,17 @@ end
 function Engine:vibrate(vibration: Types.vibration)
     self._isRunning = true
 
-    if not self:getCapability(vibration.input, vibration.motor) then
+    --[[if not self:getCapability(vibration.input, vibration.motor) then
         return
-    end
+    end]]
 
-    self.vibrated:_fire()
+    self.vibrationBegan:_fire()
 
     coroutine.wrap(function()
         for _, node in pairs(vibration._sequence) do
             if self._isRunning then
                 HapticService:SetMotor(vibration.input, vibration.motor, node.amplitude)
+                
                 wait(node.length)
 
                 if node.delay and node.delay > 0 then
